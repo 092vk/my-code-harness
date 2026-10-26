@@ -1,0 +1,16 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "servers": {
+      "codebase-memory": {
+        "type": "local",
+        "command": ["npx", "-y", "codebase-memory-mcp"],
+        "codemode": false,
+        "timeout": {
+          "startup": 120000,
+          "catalog": 60000
+        }
+      }
+    }
+  }
+}

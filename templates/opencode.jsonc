@@ -1,0 +1,65 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  // OpenCode V2 configuration. Server names live under mcp.servers.
+  // Keep this file JSONC so the notes survive edits.
+
+  "mcp": {
+    // Startup gets extra time for the first npx download.
+    "timeout": {
+      "startup": 120000,
+      "catalog": 60000
+    },
+
+    "servers": {
+      // PRIMARY: codebase-memory-mcp
+      // Persistent SQLite graph in ~/.cache/codebase-memory-mcp.
+      // 17 MCP tools; handles the Linux kernel in about 3 minutes.
+      // codemode:false keeps the graph tools on the native tool list, where
+      // OpenCode prefixes them with the server name (codebase_memory_*).
+      "codebase-memory": {
+        "type": "local",
+        "command": ["npx", "-y", "codebase-memory-mcp"],
+        "codemode": false,
+        "timeout": {
+          "startup": 120000,
+          "catalog": 60000
+        }
+      },
+
+      // SECONDARY: codegraph
+      // One-call codegraph_explore plus auto-sync. Disabled by default.
+      // To switch backends: set this to "disabled": false and disable the
+      // codebase-memory server above. Do not run both on the same question.
+      //
+      // Index data lives in .codegraph/ (add it to .gitignore).
+      // Prefer a global install (`npm i -g @colbymchenry/codegraph`) and
+      // command ["codegraph", "serve", "--mcp"] if npx startup is too slow.
+      "codegraph": {
+        "type": "local",
+        "command": ["npx", "-y", "@colbymchenry/codegraph", "serve", "--mcp"],
+        "codemode": false,
+        "disabled": true,
+        "environment": {
+          "CODEGRAPH_TELEMETRY": "off"
+        },
+        "timeout": {
+          "startup": 120000,
+          "catalog": 60000
+        }
+      }
+    }
+  }
+
+  // OPTIONAL: OpenCode plugin for CodeGraph only.
+  // It registers CodeGraph's MCP server and builds the first index in the
+  // background. Use it with the CodeGraph backend, not with codebase-memory.
+  // "plugins": ["opencode-codegraph-bridge"],
+
+  // OPTIONAL: allow the graph tools without an approval prompt. Tool names
+  // are normalized to <server>_<tool>.
+  // "permissions": [
+  //   { "action": "codebase_memory_*", "resource": "*", "effect": "allow" },
+  //   { "action": "codegraph_*", "resource": "*", "effect": "allow" }
+  // ]
+}
